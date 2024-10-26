@@ -1,93 +1,72 @@
-const express = require("express")
-const path = require("path")
-const app = express()
+const express = require("express");
+const path = require("path");
+const mongoose = require("mongoose");
+const User = require("./mongo"); // Adjust the path as necessary
+const bcrypt = require("bcrypt");
 
- // const LogInCollection = require("./mongo")
-const port = process.env.PORT || 3001
-app.use(express.json())
+const app = express();
+const port = process.env.PORT || 3001;
 
-app.use(express.urlencoded({ extended: false }))
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
-const tempelatePath = path.join(__dirname, '../tempelates')
-const publicPath = path.join(__dirname, '../public')
-console.log(publicPath);
+const templatePath = path.join(__dirname, '../templates');
+const publicPath = path.join(__dirname, '../public');
 
-app.set('view engine', 'hbs')
-app.set('views', tempelatePath)
-app.use(express.static(publicPath))
-
-
-
-
+app.set('view engine', 'hbs');
+app.set('views', templatePath);
+app.use(express.static(publicPath));
 
 app.get('/signup', (req, res) => {
-    res.render('signup')
-})
+    res.render('signup');
+});
+
 app.get('/', (req, res) => {
-    res.render('login')
-})
+    res.render('login');
+});
 
+// Handle Signup
+app.post('/signup', async (req, res) => {
+    const { username, fullName, phone, password, confirmPassword } = req.body;
 
+    // Validate passwords match
+    if (password !== confirmPassword) {
+        return res.status(400).send("Passwords do not match");
+    }
 
- 
+    try {
+        // Check if username already exists
+        const existingUser = await User.findOne({ username });
+        if (existingUser) {
+            return res.status(400).send("Username already exists. Please choose another.");
+        }
 
-// app.post('/signup', async (req, res) => {
-    
-    
+        // Check if phone number already exists
+        const existingPhoneUser = await User.findOne({ phoneNumber: phone });
+        if (existingPhoneUser) {
+            return res.status(400).send("Phone number already in use. Please choose another.");
+        }
 
-//     const data = {
-//         name: req.body.name,
-//         password: req.body.password
-//     }
+        // Hash the password
+        const salt = await bcrypt.genSalt(10);
+        const passwordHash = await bcrypt.hash(password, salt);
 
-//     const checking = await LogInCollection.findOne({ name: req.body.name })
+        // Create a new user
+        const newUser = new User({
+            username,
+            fullName,
+            phoneNumber: phone,
+            passwordHash
+        });
 
-//    try{
-//     if (checking.name === req.body.name && checking.password===req.body.password) {
-//         res.send("user details already exists")
-//     }
-//     else{
-//         await LogInCollection.insertMany([data])
-//     }
-//    }
-//    catch{
-//     res.send("wrong inputs")
-//    }
-
-//     res.status(201).render("home", {
-//         naming: req.body.name
-//     })
-// })
-
-
-// app.post('/login', async (req, res) => {
-
-//     try {
-//         const check = await LogInCollection.findOne({ name: req.body.name })
-
-//         if (check.password === req.body.password) {
-//             res.status(201).render("home", { naming: `${req.body.password}+${req.body.name}` })
-//         }
-
-//         else {
-//             res.send("incorrect password")
-//         }
-
-
-//     } 
-    
-//     catch (e) {
-
-//         res.send("wrong details")
-        
-
-//     }
-
-
-// })
-
-
+        await newUser.save();
+        res.status(201).render("home", { naming: fullName });
+    } catch (error) {
+        console.error(error);
+        res.status(500).send("Server error");
+    }
+});
 
 app.listen(port, () => {
     console.log('port connected');
-})
+});
