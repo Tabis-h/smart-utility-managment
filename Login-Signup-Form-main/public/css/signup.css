@@ -1,33 +1,72 @@
-*{
+
+/* Reset some default styles */
+body, h1, form {
     margin: 0;
     padding: 0;
-}
-body{
-    display: grid;
-    place-items: center;
+    font-family: Arial, sans-serif;
 }
 
-h1{
-    /* color: rgb(223, 155, 52); */
-    margin-top: 20vh;
-    margin-bottom: 30px;
-
-}
-input{
-    font-size: 1rem;
-    width: 300px;
-    padding: 6px 2px; 
-    margin: 10px 0 10px 0;
-}
-.sub{
-    background-color:rgb(223, 155, 52);
-    cursor: pointer;
+body {
+    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
 }
 
-form{
-    /* margin-top: 20vh; */
-    text-align: center;
-    border: 5px solid rgb(111, 70, 23);
+h1 {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+form {
+    background: white;
     padding: 20px;
-    background-color: rgb(239, 192, 135);
+    border-radius: 5px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 300px;
+}
+
+label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+input[type="text"],
+input[type="tel"],
+input[type="password"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box; /* Ensures padding is included in width */
+}
+
+input[type="submit"] {
+    background-color: #28a745;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 10px;
+    cursor: pointer;
+    width: 100%;
+    font-size: 16px;
+}
+
+input[type="submit"]:hover {
+    background-color: #218838;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
 }
